@@ -18,7 +18,7 @@ export default function profileScreen({ route, navigation }) {
     };
 
     const saveChanges = async (id_publicacion) => {
-        const response = await fetch("http://192.168.0.2:8080/readAPost", {
+        const response = await fetch("http://192.168.20.165:8080/readAPost", {
             method: 'POST', 
             headers: {
                 'Content-Type': 'application/json'
@@ -33,7 +33,7 @@ export default function profileScreen({ route, navigation }) {
     };
 
     const editChanges = async (id_publicacion, estatus_desaparicion) => {
-        await fetch("http://192.168.0.2:8080/updatePostStatus", {
+        await fetch("http://192.168.20.165:8080/updatePostStatus", {
             method: 'POST', 
             headers: {
                 'Content-Type': 'application/json'
@@ -48,7 +48,7 @@ export default function profileScreen({ route, navigation }) {
     }, [])
 
     async function getOwnPosts( id_usuario ) {
-        const response = await fetch("http://192.168.0.2:8080/readOwnPosts", {
+        const response = await fetch("http://192.168.20.165:8080/readOwnPosts", {
             method: 'POST', 
             headers: {
                 'Content-Type': 'application/json'

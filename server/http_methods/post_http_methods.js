@@ -135,4 +135,37 @@ postLoader.post('/updatePostStatus', async (req, res) => {
     }
 })
 
+postLoader.post('/buscarPorNombre', async (req, res) => {
+    const id_usuario = req.body.id_usuario
+    const nombre = req.body.nombre
+
+    const respuesta = {
+        informacion_Publicacion: [],
+        informacion_Mascota: [],
+        informacion_Desaparicion: []
+    }
+
+    try {
+        const response = await connection.execute('SELECT * FROM publicacion WHERE id_usuario <> ?', [id_usuario])
+
+        for(let i = 0; i < response.rows.length; i++) {
+            const informacionPublicacion = response.rows[i]
+            const id_publicacion = response.rows[i].id_publicacion
+
+            const informacionMascota = await connection.execute('SELECT * FROM informacion_mascota WHERE id_publicacion = ? AND nombre_mascota = ?', [id_publicacion, nombre])
+            const informacionDesaparicion = await connection.execute('SELECT * FROM informacion_desaparicion WHERE id_publicacion = ?', [id_publicacion])
+
+            if ( informacionMascota.rows.length > 0 ) {
+                respuesta.informacion_Publicacion.push(informacionPublicacion)
+                respuesta.informacion_Mascota.push(informacionMascota.rows[0])
+                respuesta.informacion_Desaparicion.push(informacionDesaparicion.rows[0])
+            }
+        }
+
+        return res.json(respuesta)
+    } catch (error) {
+        return res.send(console.log('No pudimos traer tus publicaciones', error));
+    }
+})
+
 export default postLoader

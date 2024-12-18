@@ -44,7 +44,7 @@ export default function RegistroScreen({ navigation }) {
   };
 
   async function verificarCorreo(correo) {   
-      const response = await fetch('http://192.168.0.2:8080/buscarSesionExistente', {
+      const response = await fetch('http://192.168.20.165:8080/buscarSesionExistente', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',

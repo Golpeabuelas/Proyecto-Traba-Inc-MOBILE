@@ -6,13 +6,14 @@ export default function indexScreen({ route, navigation }) {
   const [barraVisible, setBarraVisible] = useState(false);
   const [filtroSel, setFiltroSel] = useState("Reciente");
   const [publicaciones, setPublicaciones] = useState([]);
+  const [valorBusqueda, setValorBusqueda] = useState('');
 
   useEffect(() => {
     getOtherPosts(route.params.id_usuario)
   }, [])
 
   async function getOtherPosts( id_usuario ) {
-    const response = await fetch("http://192.168.0.2:8080/readOtherPosts", {
+    const response = await fetch("http://192.168.20.165:8080/readOtherPosts", {
       method: 'POST', 
       headers: {
         'Content-Type': 'application/json'
@@ -59,7 +60,7 @@ export default function indexScreen({ route, navigation }) {
   };
 
   const cambiarFiltroReciente = async (id_usuario) => {
-    const response = await fetch("http://192.168.0.2:8080/readOtherPosts", {
+    const response = await fetch("http://192.168.20.165:8080/readOtherPosts", {
       method: 'POST', 
       headers: {
         'Content-Type': 'application/json'
@@ -106,7 +107,7 @@ export default function indexScreen({ route, navigation }) {
   }
 
   const cambiarFiltroAntiguos = async (id_usuario) => {
-    const response = await fetch("http://192.168.0.2:8080/readOtherPosts", {
+    const response = await fetch("http://192.168.20.165:8080/readOtherPosts", {
       method: 'POST', 
       headers: {
         'Content-Type': 'application/json'
@@ -136,7 +137,7 @@ export default function indexScreen({ route, navigation }) {
   }
   
   const cambiarFiltroPerdidos = async (id_usuario) => {
-    const response = await fetch("http://192.168.0.2:8080/readOtherPosts", {
+    const response = await fetch("http://192.168.20.165:8080/readOtherPosts", {
       method: 'POST', 
       headers: {
         'Content-Type': 'application/json'
@@ -167,7 +168,7 @@ export default function indexScreen({ route, navigation }) {
   }
   
   const cambiarFiltroEncontrados = async (id_usuario) => {
-    const response = await fetch("http://192.168.0.2:8080/readOtherPosts", {
+    const response = await fetch("http://192.168.20.165:8080/readOtherPosts", {
       method: 'POST', 
       headers: {
         'Content-Type': 'application/json'
@@ -181,6 +182,35 @@ export default function indexScreen({ route, navigation }) {
     for (let i = 0; i < publicaciones.informacion_Desaparicion.length; i++) {
       if ( publicaciones.informacion_Desaparicion[i].estatus_desaparicion== true) {
         if ( publicaciones.informacion_Desaparicion[i].estatus_reporte == false) {
+          formatoPublicacion.push({
+            id: publicaciones.informacion_Publicacion[i].id_publicacion, 
+            nombre: publicaciones.informacion_Mascota[i].nombre_mascota, 
+            especie: publicaciones.informacion_Mascota[i].especie_mascota, 
+            detalle: publicaciones.informacion_Mascota[i].distintivo_mascota, 
+            img: publicaciones.informacion_Mascota[i].imagen_mascota,
+            fecha_desaparición: publicaciones.informacion_Desaparicion[i].fecha_desaparicion
+          })
+        }
+      }
+    }
+    setPublicaciones(formatoPublicacion)
+  }
+
+  const buscarPorNombre = async (id_usuario, nombre) => {
+    const response = await fetch('http://192.168.20.165:8080/buscarPorNombre', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id_usuario, nombre })
+    })
+
+    const publicaciones = await response.json()
+
+    const formatoPublicacion = []
+    for (let i = 0; i < publicaciones.informacion_Desaparicion.length; i++) {
+      if ( publicaciones.informacion_Desaparicion[i].estatus_desaparicion == true) {
+        if ( publicaciones.informacion_Desaparicion[i].estatus_reporte == true) {
           formatoPublicacion.push({
             id: publicaciones.informacion_Publicacion[i].id_publicacion, 
             nombre: publicaciones.informacion_Mascota[i].nombre_mascota, 
@@ -233,17 +263,17 @@ export default function indexScreen({ route, navigation }) {
         <TouchableOpacity>
           <Icon name="chatbubble-ellipses-outline" size={24} color="#FFFFFF" />
         </TouchableOpacity>
+        
       </View>
 
       
       <View style={estilos.saludo_c}>
         <View>
           <Text style={estilos.texto_s}>¡Hola {route.params.nombre + '!'}</Text>
-          <TextInput
-            style={estilos.busqueda_i}
-            placeholder="¿Qué quieres hacer?"
-            placeholderTextColor="#999"
-          />
+          <TextInput style={estilos.busqueda_i} placeholder="¿Qué quieres hacer?" placeholderTextColor="#999" value={valorBusqueda} onChangeText={setValorBusqueda}/>
+          <TouchableOpacity onPress={() => buscarPorNombre(route.params.id_usuario, valorBusqueda)}>
+            Buscar por Nombre
+          </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={() => {navigation.replace("Profile", route.params)}}>
           <Image source={route.params.foto_usuario} style={estilos.perfil_i} />

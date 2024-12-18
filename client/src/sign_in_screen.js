@@ -7,7 +7,7 @@ export default function LoginScreen({ navigation }) {
 
     async function handleLogin (correo, password) {      
       try {
-        const response = await fetch("http://192.168.0.2:8080/iniciarSesion", {
+        const response = await fetch("http://192.168.20.165:8080/iniciarSesion", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
